@@ -9,6 +9,10 @@ export default function App() {
     (state) => [state.firstName, state.updateFirstName],
     shallow
   );
+  const [deep, updateDeep] = useStore((state) => [
+    state.deep,
+    state.updateDeep,
+  ]);
 
   return (
     <main>
@@ -24,6 +28,12 @@ export default function App() {
       <p>
         Hello, <strong>{firstName}!</strong>
       </p>
+      <p>{deep.nested.obj.count}</p>
+      <input
+        // Update the "firstName" state
+        onChange={(e) => updateDeep(e.currentTarget.value)}
+        value={deep.nested.obj.count}
+      />
     </main>
   );
 }
