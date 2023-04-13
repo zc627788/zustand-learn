@@ -26,6 +26,8 @@ export const useStore = create<State & Action>((set) => ({
       obj: { count: 0 },
     },
   },
+  //如果set后面设置为true禁用合并行为
+  // set内部自己合并了状态 不需要在{...state,firstName:firstName}
   updateFirstName: (firstName) => set(() => ({ firstName: firstName })),
   updateLastName: (lastName) => set(() => ({ lastName: lastName })),
   // 如果是嵌套对象,出现了什么问题?
