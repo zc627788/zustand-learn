@@ -1,19 +1,17 @@
-import { useBoundStore, inc, setText } from "../store";
-
+import { useBoundStore } from "../store";
+import { useEffect } from "react";
 // In consuming app
 export default function App() {
-  //省略写法
-  const count = useBoundStore((state: any) => state.count);
-  const text = useBoundStore((state: any) => state.text);
+
+  const count = useBoundStore((state: any) => state.fishes);
+  const addAFish = useBoundStore((state: any) => state.addAFish);
 
 
 
   return (
     <main>
       <p>bear:{count}</p>
-      <button onClick={inc}>增加熊</button>
-      <input type="text" onChange={setText} value={text} />
-      <p>{text}</p>
+      <button onClick={addAFish}>增加熊</button>
     </main>
   );
 }

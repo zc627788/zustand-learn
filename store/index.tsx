@@ -1,23 +1,34 @@
 import { create } from "zustand";
-// 组合式
-// export const useBoundStore = create((set) => ({
-//   count: 0,
-//   text: "hello",
-//   inc: () => set((state: any) => ({ count: state.count + 1 })),
-//   setText: (text: any) => set({ text }),
-// }));
+import { persist, StateStorage, createJSONStorage } from "zustand/middleware";
 
-// 分离封装式
-// 值和逻辑处理分开
-export const useBoundStore = create(() => ({
-  count: 0,
-  text: "hello",
-}));
-
-export const inc: any = () =>
-  useBoundStore.setState((state) => ({ count: state.count + 1 }));
-
-export const setText = (e: any) => {
-  console.log(e.target.value);
-  useBoundStore.setState(() => ({ text: e.target.value}));
+const hashStorage: StateStorage = {
+  getItem: (key): string => {
+    const searchParams = new URLSearchParams(location.hash.slice(1));
+    const storedValue = searchParams.get(key) ?? "";
+    return storedValue;
+  },
+  setItem: (key, newValue): void => {
+    const searchParams = new URLSearchParams(location.hash.slice(1));
+    console.log(newValue)
+    searchParams.set(key, JSON.stringify(newValue));
+    location.hash = searchParams.toString();
+  },
+  removeItem: (key): void => {
+    const searchParams = new URLSearchParams(location.hash.slice(1));
+    searchParams.delete(key);
+    location.hash = searchParams.toString();
+  },
 };
+
+export const useBoundStore = create(
+  persist(
+    (set, get: any) => ({
+      fishes: 0,
+      addAFish: () => set({ fishes: get().fishes + 1 }),
+    }),
+    {
+      name: "food-storage", // unique name
+      storage: createJSONStorage(() => hashStorage),
+    }
+  )
+);
