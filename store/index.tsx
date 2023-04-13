@@ -1,5 +1,24 @@
 import produce from "immer";
-import { create } from "zustand";
+import { create, StoreApi, UseBoundStore } from "zustand";
+
+type WithSelectors<S> = S extends { getState: () => infer T }
+  ? S & { use: { [K in keyof T]: () => T[K] } }
+  : never;
+//官方配置,不需要引入hook,直接用 
+// get the property
+// const bears = useBearStore.use.bears()
+
+const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
+  _store: S
+) => {
+  let store = _store as WithSelectors<typeof _store>;
+  store.use = {};
+  for (let k of Object.keys(store.getState())) {
+    (store.use as any)[k] = () => store((s) => s[k as keyof typeof s]);
+  }
+
+  return store;
+};
 
 type State = {
   firstName: string;
@@ -10,6 +29,12 @@ type State = {
     };
   };
 };
+
+interface BearState {
+  bears: number;
+  increase: (by: number) => void;
+  increment: () => void;
+}
 
 type Action = {
   updateFirstName: (firstName: State["firstName"]) => void;
@@ -53,3 +78,11 @@ export const useStore = create<State & Action>((set) => ({
       })
     ),
 }));
+
+const useBearStoreBase = create<BearState>()((set) => ({
+  bears: 0,
+  increase: (by) => set((state) => ({ bears: state.bears + by })),
+  increment: () => set((state) => ({ bears: state.bears + 1 })),
+}));
+
+export const useBearStore = createSelectors(useBearStoreBase);
