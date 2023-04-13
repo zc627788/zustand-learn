@@ -1,7 +1,19 @@
 import { create } from "zustand";
 
-export const useStore = create((set) => ({
-  bears: 0,
-  increasePopulation: () => set((state: any) => ({ bears: state.bears + 1 })),
-  removeAllBears: () => set({ bears: 0 }),
+type State = {
+  firstName: string;
+  lastName: string;
+};
+
+type Action = {
+  updateFirstName: (firstName: State["firstName"]) => void;
+  updateLastName: (lastName: State["lastName"]) => void;
+};
+
+// Create your store, which includes both state and (optionally) actions
+export const useStore = create<State & Action>((set) => ({
+  firstName: "",
+  lastName: "",
+  updateFirstName: (firstName) => set(() => ({ firstName: firstName })),
+  updateLastName: (lastName) => set(() => ({ lastName: lastName })),
 }));

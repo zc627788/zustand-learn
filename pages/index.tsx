@@ -1,24 +1,29 @@
-import Image from "next/image";
-import { Inter } from "next/font/google";
 import { useStore } from "../store";
+import { shallow } from "zustand/shallow";
 
-export default function Home() {
-  const bears = useStore((state: any) => state.bears);
-  return (
-    <>
-      <h1>{bears}</h1>
-      <AddControls />
-      <RemoveControls />
-    </>
+// In consuming app
+export default function App() {
+  // "select" the needed state and actions, in this case, the firstName value
+  // and the action updateFirstName
+  const [firstName, updateFirstName] = useStore(
+    (state) => [state.firstName, state.updateFirstName],
+    shallow
   );
-}
 
-function AddControls() {
-  const increasePopulation = useStore((state: any) => state.increasePopulation);
-  return <button onClick={increasePopulation}>one up</button>;
-}
+  return (
+    <main>
+      <label>
+        First name
+        <input
+          // Update the "firstName" state
+          onChange={(e) => updateFirstName(e.currentTarget.value)}
+          value={firstName}
+        />
+      </label>
 
-function RemoveControls() {
-  const removeAllBears = useStore((state: any) => state.removeAllBears);
-  return <button onClick={removeAllBears}>clean</button>;
+      <p>
+        Hello, <strong>{firstName}!</strong>
+      </p>
+    </main>
+  );
 }
